@@ -153,7 +153,7 @@ namespace KeyboardMenu
         private void PlayGame()
         {
             Clear();
-            Session session = new Session(PlayerName1(out string Input),PlayerName2(out string Input2));
+            Session session = new Session(PlayerName(out string Input, 1),PlayerName(out string Input2, 2));
             session.Start();
             using (ApplicationContext db = new())
             {   
@@ -164,10 +164,10 @@ namespace KeyboardMenu
                 db.SaveChanges();
             }
         }
-        public string PlayerName1(out string Input)
+        public string PlayerName(out string Input, int number)
         {
             Clear();
-            Console.WriteLine("Введите имя первого игрока");
+            Console.WriteLine($"Введите имя игрока N{number}");
             Input = Console.ReadLine();
             if (Input == null)
             {
@@ -178,7 +178,7 @@ namespace KeyboardMenu
             return Input;
 
         }
-        public string PlayerName2(out string Input)
+        /*public string PlayerName2(out string Input)
         {
             Clear();
             Console.WriteLine("Введите имя первого игрока");
@@ -191,7 +191,7 @@ namespace KeyboardMenu
             Clear();
             return Input;
             
-        }
+        }*/
 
         private void DisplayAboutInfo()
         {
