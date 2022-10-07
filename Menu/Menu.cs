@@ -1,9 +1,12 @@
 ﻿using KeyboardMenu;
+using Menu;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using static System.Console;
 
 namespace KeyboardMenu
@@ -18,6 +21,7 @@ namespace KeyboardMenu
                 Console.CursorVisible = false;
                 Game myGame = new Game();
                 myGame.Start();
+
 
             }
         }
@@ -151,6 +155,14 @@ namespace KeyboardMenu
             Clear();
             Session session = new Session(PlayerName1(),PlayerName2());
             session.Start();
+            using (ApplicationContext db = new())
+            {   
+                db.Database.EnsureCreated();
+                Player LeftPlayer = new Player { Name = session.LeftPlayer.Name, Points = session.LeftPlayer.Points };
+                Player RightPlayer = new Player { Name = session.RightPlayer.Name, Points = session.RightPlayer.Points };
+                db.Players.AddRange(LeftPlayer, RightPlayer);
+                db.SaveChanges();
+            }
         }
         public string PlayerName1()
         {
@@ -162,6 +174,7 @@ namespace KeyboardMenu
                 Input = "DefaultPlayer1";
                 return ($"{Input}");
             }
+            Clear();
             return Input;
 
         }
@@ -175,8 +188,9 @@ namespace KeyboardMenu
                 Input = "DefaultPlayer2";
                 return ($"{Input}");
             }
+            Clear();
             return Input;
-
+            
         }
 
         private void DisplayAboutInfo()
@@ -212,6 +226,19 @@ Borisov Ivan
         private void MatchHistory()
         {
             Clear();
+            using (ApplicationContext db = new())
+            {
+                var Players = db.Players.ToList();
+                foreach (var item in Players)
+                {
+
+                    Console.WriteLine($"Name : {item.Name}, Points : {item.Points}");
+                    
+                    RunMainMenu();
+
+                }
+            }
+
             //Вводить данные из БД
         }
         private void HowtoPlay()

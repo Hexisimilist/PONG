@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using Menu;
+using System.Diagnostics;
+using System.ComponentModel.DataAnnotations.Schema;
+
 using static System.Console;
 
 //TODO Общая задача - при нажатии "Exit" все закрывалось сразу(вместе с консолью)
@@ -6,6 +9,8 @@ namespace KeyboardMenu
 {
     public class Session
     {
+        public int SessionId { get; set; }
+
         public Ball ball { get; set; }
         public Player LeftPlayer { get; set; }
         public Player RightPlayer { get; set; }
@@ -15,7 +20,10 @@ namespace KeyboardMenu
         public Stopwatch GameDuration { get; set; }
 
         public bool FinishFlag { get; set; }
+        public Session()
+        {
 
+        }
         public Session(string LeftPlayerName, string RightPlayerName)
         {
             ball = new Ball();
@@ -35,11 +43,9 @@ namespace KeyboardMenu
            
             Console.SetCursorPosition(ScoreBoard.X, ScoreBoard.Y + 1);
             Console.WriteLine($"{LeftPlayer.Name}   |   {RightPlayer.Name}");
+                     
+           //TODO перенести это в данные: DateTime.Now.ToShortTimeString();
             
-            Console.WriteLine(DateTime.Now.ToShortTimeString());
-            
-
-
             Console.SetCursorPosition(ball.X, ball.Y);
             Console.WriteLine(Ball.BallTile);
             Thread.Sleep(100); //Adds a timer so that the players have time to react
@@ -47,6 +53,11 @@ namespace KeyboardMenu
 
             Console.SetCursorPosition(ball.X, ball.Y);
             Console.WriteLine(" "); //Clears the previous position of the ball
+            
+            TimeSpan ts = GameDuration.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}", ts.Minutes, ts.Seconds);
+            Console.SetCursorPosition(Field.fieldLength / 2 - 2, Field.fieldWidth + 3);
+            Console.WriteLine(elapsedTime);
         }
         public void UpdateBall()
         {
@@ -134,7 +145,7 @@ namespace KeyboardMenu
                             ball.X = Field.fieldLength / 2;
                             Console.SetCursorPosition(ScoreBoard.X, ScoreBoard.Y);
                             Console.WriteLine($"{LeftPlayer.Points} | {RightPlayer.Points}");
-                            if (RightPlayer.Points == 10)
+                            if (RightPlayer.Points == 1)
                             {
                                 GameDuration.Stop();
                                 //TODO DateTime.Now.ToShortTimeString() in database
@@ -153,7 +164,7 @@ namespace KeyboardMenu
                             ball.X = Field.fieldLength / 2;
                             Console.SetCursorPosition(ScoreBoard.X, ScoreBoard.Y);
                             Console.WriteLine($"{LeftPlayer.Points} | {RightPlayer.Points}");
-                            if (LeftPlayer.Points == 10)
+                            if (LeftPlayer.Points == 1)
                             {
                                 GameDuration.Stop();
                                 //TODO DateTime.Now.ToShortTimeString() in database
@@ -171,7 +182,8 @@ namespace KeyboardMenu
                 {
                     case ConsoleKey.Escape:
                         {
-                            Console.SetCursorPosition(Field.fieldLength / 2, Field.fieldWidth / 2);
+
+                            Console.SetCursorPosition(Field.fieldLength / 2, Field.fieldWidth / 2);                            
                             Console.WriteLine("_Paused");
                             Console.ReadKey();
                             Clear();
@@ -212,14 +224,16 @@ namespace KeyboardMenu
 
             }
 
-
+            
         }
     }
 
     public class Player
     {
+        public int PlayerId { get; set; }
         public string Name { get; set; }
         public int Points { get; set; }
+        [NotMapped]
         public Rackets Racket { get; set; }
 
         public void Win()
@@ -230,6 +244,11 @@ namespace KeyboardMenu
             //TODO Вставить [Console.WriteLine(GameDuration.Elapsed);] после победы одного из игроков
         }
 
+        public Player()
+        {
+
+        }
+
         public Player(string name)
         {
             Name = name;
@@ -238,10 +257,18 @@ namespace KeyboardMenu
         }
     }
 
+    public enum GameSettings
+    {
+        fieldLength = 50,
+        fieldWidth = 15
+    }
+
     public class Field
     {
         //Field
-        public const int fieldLength = 50, fieldWidth = 15;
+        public static int fieldLength = (int)GameSettings.fieldLength;
+        public static int fieldWidth = (int)GameSettings.fieldWidth;
+
         public const char fieldTile = '#';
         public string line = string.Concat(Enumerable.Repeat(fieldTile, fieldLength));
 
@@ -258,6 +285,7 @@ namespace KeyboardMenu
 
     public class Rackets
     {
+        public int RacketsId { get; set; }
         public static int Length = Field.fieldWidth / 4;
         public const char Tile = '|';
         public int Height { get; set; } = 0;
