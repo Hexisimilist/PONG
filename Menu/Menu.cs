@@ -153,22 +153,22 @@ namespace KeyboardMenu
         private void PlayGame()
         {
             Clear();
-            Session session = new Session(PlayerName1(),PlayerName2());
+            Session session = new Session(PlayerName1(out string Input),PlayerName2(out string Input2));
             session.Start();
             using (ApplicationContext db = new())
             {   
                 db.Database.EnsureCreated();
-                Player LeftPlayer = new Player { Name = session.LeftPlayer.Name, Points = session.LeftPlayer.Points };
-                Player RightPlayer = new Player { Name = session.RightPlayer.Name, Points = session.RightPlayer.Points };
+                Player LeftPlayer = new Player { Name = Input, Points = session.LeftPlayer.Points };
+                Player RightPlayer = new Player { Name = Input2, Points = session.RightPlayer.Points };
                 db.Players.AddRange(LeftPlayer, RightPlayer);
                 db.SaveChanges();
             }
         }
-        public string PlayerName1()
+        public string PlayerName1(out string Input)
         {
             Clear();
             Console.WriteLine("Введите имя первого игрока");
-            string Input = Console.ReadLine();
+            Input = Console.ReadLine();
             if (Input == null)
             {
                 Input = "DefaultPlayer1";
@@ -178,11 +178,11 @@ namespace KeyboardMenu
             return Input;
 
         }
-        public string PlayerName2()
+        public string PlayerName2(out string Input)
         {
             Clear();
             Console.WriteLine("Введите имя первого игрока");
-            string Input = Console.ReadLine();
+            Input = Console.ReadLine();
             if (Input == null)
             {
                 Input = "DefaultPlayer2";
@@ -273,4 +273,5 @@ RunMainMenu();
         }
     }
 }
+
 
